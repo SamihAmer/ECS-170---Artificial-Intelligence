@@ -1,3 +1,4 @@
+from copy import deepcopy
 import random
 import time
 import pygame
@@ -77,8 +78,35 @@ class stupidAI(connect4Player):
 
 class minimaxAI(connect4Player):
 
-	def play(self, env, move):
+	def play(self, env, move):  #this is the "MINIMAX" function in the video, where we adjust our moves to actually do something 
+
 		pass
+
+	def eval(self, env):   #this function is our evaluation function that we call in MIN and MAX 
+		#evaluation 
+
+	def MAX(self,env,move, depth): #env is the board 
+		
+		if gameOver(env) or depth == 0:
+			return eval(env.board)
+		possible = env.topPosition >= 0 
+		max_v = inf 
+
+		for move in possible:
+			child = simulateMove(deepcopy(env), move, self.position)
+			max_v = min(max_v, MIN(child, depth - 1))
+
+	def MIN(self, env, move, depth):
+		if gameOver(env) or depth == 0:
+			return eval(state)
+		possible = env.topPosition >= 0 
+		for move in possible:
+			child = simulateMove(deepcopy(env), move, self.position)
+			max_v = min(max_v, MAX(child, depth-1))
+		return max_v 
+
+	
+
 
 class alphaBetaAI(connect4Player):
 
