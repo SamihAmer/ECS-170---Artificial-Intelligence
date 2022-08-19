@@ -78,13 +78,36 @@ class stupidAI(connect4Player):
 
 class minimaxAI(connect4Player):
 
-	def play(self, env, move):  #this is the "MINIMAX" function in the video, where we adjust our moves to actually do something 
+	def simulateMove(env, move, turn):  # thus function should just be us placing the pieces on the board 
+		if env.topPosition[move] < 0:
+			possible = env.topPosition >= 0
+			indices = []
+			for i, p in enumerate(possible):
+				if p: indices.append(i)
+			move = random.choice(indices)
+		env.board[self.topPosition[move]][move] = env.turnPlayer.position
+	return env 
 
+	def play(self, env, move):  #this is the "MINIMAX" function in the video, where we adjust our moves to actually do something (max_depth)
+		possible = env.topPosition >= 0 
+		max_v = -math.inf
+
+		for move in possible:
+			child = simulateMove(deepcopy(env), move, self.opponent.position)
+			v = MIN(child, depth -1 )
+			if v > max_v:
+				max_v = v 
+				move[:] = [move]  # i think we need to figure out how to make it move 
+
+	
+	def eval(self, env):   #this function is our evaluation function that we call in MIN and MAX 
+
+		
+		#i don't like math  
+		# 
 		pass
 
-	def eval(self, env):   #this function is our evaluation function that we call in MIN and MAX 
-		#evaluation 
-
+		
 	def MAX(self,env,move, depth): #env is the board 
 		
 		if gameOver(env) or depth == 0:
@@ -93,12 +116,13 @@ class minimaxAI(connect4Player):
 		max_v = inf 
 
 		for move in possible:
-			child = simulateMove(deepcopy(env), move, self.position)
+			child = simulateMove(deepcopy(env), move, self.position) #simulatemove adding whoever turn it is to environment 
 			max_v = min(max_v, MIN(child, depth - 1))
 
+	
 	def MIN(self, env, move, depth):
 		if gameOver(env) or depth == 0:
-			return eval(state)
+			return eval(env.board)
 		possible = env.topPosition >= 0 
 		for move in possible:
 			child = simulateMove(deepcopy(env), move, self.position)
