@@ -79,55 +79,100 @@ class stupidAI(connect4Player):
 
 class minimaxAI(connect4Player):
 
-	def simulateMove(env, move, turn):  # thus function should just be us placing the pieces on the board 
-		if env.topPosition[move] < 0:
-			possible = env.topPosition >= 0
-			indices = []
-			for i, p in enumerate(possible):
-				if p: indices.append(i)
-			move = random.choice(indices)
-		env.board[env.topPosition[move]][move] = env.turnPlayer.position
-		return env 
-
 	def simulateMove(self, env, move, player):
 		env.board[env.topPosition[move]][move] = player
 		env.topPosition[move] -= 1
 		env.history[0].append(move)
+		return deepcopy(env)
 
-	
+	def play(self, env, move):  #this is the "MINIMAX" function in the video, where we adjust our moves to actually do something (max_depth)
+		self.Minimax(deepcopy(env), move, 5)
+
 	def eval(self, env):   #this function is our evaluation function that we call in MIN and MAX 
-		# if win return 1
-		# if lose return -1
+		# if win return 1000
+		# if lose return -1000
 		# if tie return 0
-		pass
+		# return eval function if game is not done
+		our_seq = [0,0,0]
+		our_count = 0
+
+		opp_seq = [0,0,0]
+		opp_count = 0
+
+
+		# rows
+		for i in range(len(env.board)):
+			for j in range(len(env.board[i])):
+				if env.board[i][j] == 1: # change 1 as us, and 2 as opponent
+					our_count += 1
+					if opp_count != 0:
+						opp_seq[opp_count - 1] += 1
+					opp_count = 0
+				elif env.board[i][j] == 2:
+					opp_count += 1
+					if our_count != 0:
+						our_seq[our_count - 1] += 1
+					our_count = 0
+				else:
+					print(our_count, opp_count)
+					if our_count == 0 and opp_count == 0:
+						continue
+					elif our_count == 0 and opp_count != 0:
+						opp_seq[opp_count - 1] += 1
+						opp_count = 0
+					elif our_count != 0 and opp_count == 0:
+						our_seq[our_count - 1] += 1
+						our_count = 0
+		# columns
 		
 
-	def gameOver(env):
-		# if gameisover return true
-		return False
+	def Minimax(self, env, move, max_depth):
+		possible = env.topPosition >= 0 # possible is an array of seven True
+		max_v = -math.inf
+
+		for move_index, p in enumerate(possible):
+			if not p:
+				continue
+			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position) # move should be integer
+			v = self.MIN(child, max_depth - 1, self.opponent.position)
+			if v > max_v:
+				max_v = v 
+				move[:] = [move]
+		return move
 
 		
-	def MAX(self,env,move, depth): #env is the board 
-		
-		if gameOver(env) or depth == 0:
-			return eval(env.board)
+	def MAX(self, env, depth, player): #env is the board 
+
+		if env.gameOver(env.history[0][-1], player) or depth == 0: # prev_move is integer of column of the last move
+			return self.eval(env.board)
+
 		possible = env.topPosition >= 0
-		max_v = math.inf
+		max_v = -math.inf
 
-		for move in possible:
-			child = self.simulateMove(deepcopy(env), move, self.position) #simulatemove adding whoever turn it is to environment 
-			max_v = min(max_v, self.MIN(child, depth - 1))
+		for move_index, p in enumerate(possible):
+			if not p:
+				continue
+			child = self.simulateMove(deepcopy(env), move_index, self.position) #simulatemove adding whoever turn it is to environment 
+			max_v = max(max_v, self.MIN(child, depth - 1, self.opponent.position))
+			print(max_v)
 		return max_v
 
 	
-	def MIN(self, env, move, depth):
-		if gameOver(env) or depth == 0:
-			return eval(env.board)
+	def MIN(self, env, depth, player):
+		
+		if env.gameOver(env.history[0][-1], player) or depth == 0:
+			return self.eval(env.board)
+
 		possible = env.topPosition >= 0
-		for move in possible:
-			child = self.simulateMove(deepcopy(env), move, self.position)
-			max_v = min(max_v, self.MAX(child, depth - 1))
-		return max_v 
+		min_v = math.inf
+
+		for move_index, p in enumerate(possible):
+			if not p:
+				continue
+			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position)
+			min_v = min(min_v, self.MAX(child, depth - 1, self.position))
+		print(min_v)
+		return min_v 
 
 	
 
