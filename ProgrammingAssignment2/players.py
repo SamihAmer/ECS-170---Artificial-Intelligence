@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 import random
 import time
 import pygame
@@ -83,34 +84,35 @@ class minimaxAI(connect4Player):
 		env.board[env.topPosition[move]][move] = player
 		env.topPosition[move] -= 1
 		env.history[0].append(move)
-		print(env)
 		return env
 
-	def play(self, env, move):  #this is the "MINIMAX" function in the video, where we adjust our moves to actually do something (max_depth)
-		self.Minimax(deepcopy(env), move, 5)
+	def play(self, env, move):
+		self.Minimax(deepcopy(env), move, 3)
 
 	def eval(self, board):   #this function is our evaluation function that we call in MIN and MAX 
-		# if win return 1000
-		# if lose return -1000
-		# if tie return 0
-		# return eval function if game is not done
+
 		our_seq = [0,0,0]
 		our_count = 0
 
 		opp_seq = [0,0,0]
 		opp_count = 0
-		print(board)
 
 		# rows
 		for i in range(len(board)):
+			if np.all((board[-i-1] == 0)):
+				break
 			for j in range(len(board[i])):
-				if board[i][j] == 1:
+				if board[-i-1][j] == 1:
 					our_count += 1
+					if our_count > 3:
+						return 100000000
 					if opp_count != 0:
 						opp_seq[opp_count - 1] += 1
 						opp_count = 0
-				elif board[i][j] == 2:
+				elif board[-i-1][j] == 2:
 					opp_count += 1
+					if opp_count > 3:
+						return -100000000
 					if our_count != 0:
 						our_seq[our_count - 1] += 1
 						our_count = 0
@@ -135,13 +137,17 @@ class minimaxAI(connect4Player):
 		# columns
 		for i in range(len(board[i])):
 			for j in range(len(board)):
-				if board[len(board) - j - 1][i] == 1:
+				if board[-j-1][i] == 1:
 					our_count += 1
+					if our_count > 3:
+						return 100000000
 					if opp_count != 0:
 						opp_seq[opp_count - 1] += 1
 						opp_count = 0
-				elif board[len(board) - j - 1][i] == 2:
+				elif board[-j-1][i] == 2:
 					opp_count += 1
+					if opp_count > 3:
+						return -100000000
 					if our_count != 0:
 						our_seq[our_count - 1] += 1
 						our_count = 0
@@ -165,6 +171,11 @@ class minimaxAI(connect4Player):
 				our_count = 0
 			our_count = 0
 			opp_count = 0
+			
+		return 5 * our_seq[0] + 15 * our_seq[1] + 30 * our_seq[2] - (5 * opp_seq[0]  + 15 * opp_seq[1] + 30 * opp_seq[2])
+		
+		# diagonals
+
 		
 
 	def Minimax(self, env, move, max_depth):
@@ -174,17 +185,24 @@ class minimaxAI(connect4Player):
 		for move_index, p in enumerate(possible):
 			if not p:
 				continue
-			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position) # move should be integer
-			v = self.MIN(child, max_depth - 1, self.opponent.position)
+			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position)
+			v = self.MIN(child, max_depth - 1)
 			if v > max_v:
 				max_v = v 
-				move[:] = [move]
+				move[:] = [move_index]
+		print('done')
 		return move
 
 		
-	def MAX(self, env, depth, player): #env is the board 
+	def MAX(self, env, depth): #env is the board 
 
-		if env.gameOver(env.history[0][-1], player) or depth == 0: # prev_move is integer of column of the last move
+		if len(env.history[0]) + len(env.history[1]) == env.board.shape[0] * env.board.shape:
+			return 0
+
+		if env.gameOver(env.history[0][-1], self.opponent.position):
+			return -10000000
+
+		if depth == 0:
 			return self.eval(env.board)
 
 		possible = env.topPosition >= 0
@@ -194,14 +212,19 @@ class minimaxAI(connect4Player):
 			if not p:
 				continue
 			child = self.simulateMove(deepcopy(env), move_index, self.position) #simulatemove adding whoever turn it is to environment 
-			print(child)
-			max_v = max(max_v, self.MIN(child, depth - 1, self.opponent.position))
+			max_v = max(max_v, self.MIN(child, depth - 1))
 		return max_v
 
 	
-	def MIN(self, env, depth, player):
+	def MIN(self, env, depth):
+
+		if len(env.history[0]) + len(env.history[1]) == env.board.shape[0] * env.board.shape:
+			return 0
+
+		if env.gameOver(env.history[0][-1], self.position):
+			return 10000000
 		
-		if env.gameOver(env.history[0][-1], player) or depth == 0:
+		if depth == 0:
 			return self.eval(env.board)
 
 		possible = env.topPosition >= 0
@@ -211,8 +234,7 @@ class minimaxAI(connect4Player):
 			if not p:
 				continue
 			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position)
-			print(child)
-			min_v = min(min_v, self.MAX(child, depth - 1, self.position))
+			min_v = min(min_v, self.MAX(child, depth - 1))
 		return min_v 
 
 	
