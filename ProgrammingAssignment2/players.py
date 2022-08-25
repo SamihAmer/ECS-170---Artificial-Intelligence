@@ -91,88 +91,112 @@ class minimaxAI(connect4Player):
 
 	def eval(self, board):   #this function is our evaluation function that we call in MIN and MAX 
 
-		our_seq = [0,0,0]
 		our_count = 0
+		our_spaces = 0
+		our_seq = [0,0,0,0]
 
-		opp_seq = [0,0,0]
 		opp_count = 0
+		opp_spaces = 0
+		opp_seq = [0,0,0,0]
 
-		# rows
+		score = 0
+
 		for i in range(len(board)):
 			if np.all((board[-i-1] == 0)):
 				break
 			for j in range(len(board[i])):
-				if board[-i-1][j] == 1:
+				if board[-i-1][j] == self.position:
 					our_count += 1
 					if our_count > 3:
 						return 100000000
-					if opp_count != 0:
-						opp_seq[opp_count - 1] += 1
-						opp_count = 0
-				elif board[-i-1][j] == 2:
+					opp_seq[opp_count] += 1
+					if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
+						score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+					opp_seq = [0,0,0,0]
+					opp_count = 0
+					opp_spaces = 0
+				elif board[-i-1][j] == self.opponent.position:
 					opp_count += 1
 					if opp_count > 3:
+						print('over')
 						return -100000000
-					if our_count != 0:
-						our_seq[our_count - 1] += 1
-						our_count = 0
+					our_seq[our_count] += 1
+					if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
+						score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+					our_seq = [0,0,0,0]
+					our_count = 0
+					our_spaces = 0
 				else:
-					if our_count == 0 and opp_count == 0:
-						continue
-					elif our_count == 0 and opp_count != 0:
-						opp_seq[opp_count - 1] += 1
-						opp_count = 0
-					elif our_count != 0 and opp_count == 0:
-						our_seq[our_count - 1] += 1
-						our_count = 0
+					our_seq[our_count] += 1
+					opp_seq[opp_count] += 1
+					our_count = 0
+					opp_count = 0
+					our_spaces += 1
+					opp_spaces += 1
+					
 			if opp_count != 0:
-				opp_seq[opp_count - 1] += 1
-				opp_count = 0
+				opp_seq[opp_count] += 1
+				if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
+					score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+					opp_count = 0
+					opp_spaces = 0
 			elif our_count != 0:
-				our_seq[our_count - 1] += 1
-				our_count = 0
+				our_seq[our_count] += 1
+				if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
+					score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+					our_count = 0
+					our_spaces = 0
 			our_count = 0
+			our_spaces = 0
+			our_seq = [0,0,0,0]
 			opp_count = 0
+			opp_spaces = 0
+			opp_seq = [0,0,0,0]
 		
 		# columns
+		last_player = 0
 		for i in range(len(board[i])):
 			for j in range(len(board)):
-				if board[-j-1][i] == 1:
+				if board[-j-1][i] == self.position:
 					our_count += 1
-					if our_count > 3:
-						return 100000000
-					if opp_count != 0:
-						opp_seq[opp_count - 1] += 1
-						opp_count = 0
-				elif board[-j-1][i] == 2:
+					opp_count = 0 # if other player is on the top, theres no advantages
+					last_player = self.position
+				elif board[-j-1][i] == self.opponent.position:
 					opp_count += 1
-					if opp_count > 3:
-						return -100000000
-					if our_count != 0:
-						our_seq[our_count - 1] += 1
-						our_count = 0
-				else:
-					if our_count == 0 and opp_count == 0:
+					our_count = 0
+					last_player = self.opponent.position
+				else: # count for spaces left on the top, depending on the last player # if spaces + piece >= 4, then returns value(more piece is better)
+					if last_player == self.position:
+						our_spaces = len(board) - j
+						if our_count == 1:
+							if our_spaces >= 3:
+								score += 20
+						if our_count == 2:
+							if our_spaces >= 2:
+								score += 50
+						if our_count == 3:
+							if our_spaces >= 1:
+								score += 100
 						break
-					elif our_count == 0 and opp_count != 0:
-						opp_seq[opp_count - 1] += 1
-						opp_count = 0
-						break
-					elif our_count != 0 and opp_count == 0:
-						our_seq[our_count - 1] += 1
-						our_count = 0
+					if last_player == self.opponent.position:
+						opp_spaces = len(board) - j
+						if opp_count == 1:
+							if opp_spaces >= 3:
+								score -= 20
+						if opp_count == 2:
+							if opp_spaces >= 2:
+								score -= 50
+						if opp_count == 3:
+							if opp_spaces >= 1:
+								score -= 100
 						break
 						
-			if opp_count != 0:
-				opp_seq[opp_count - 1] += 1
-				opp_count = 0
-			elif our_count != 0:
-				our_seq[our_count - 1] += 1
-				our_count = 0
 			our_count = 0
+			our_spaces = 0
 			opp_count = 0
+			opp_spaces = 0
 			
-		return 5 * our_seq[0] + 15 * our_seq[1] + 30 * our_seq[2] - (5 * opp_seq[0]  + 15 * opp_seq[1] + 30 * opp_seq[2])
+		return score
 		
 		# diagonals
 
@@ -185,7 +209,7 @@ class minimaxAI(connect4Player):
 		for move_index, p in enumerate(possible):
 			if not p:
 				continue
-			child = self.simulateMove(deepcopy(env), move_index, self.opponent.position)
+			child = self.simulateMove(deepcopy(env), move_index, self.position)
 			v = self.MIN(child, max_depth - 1)
 			if v > max_v:
 				max_v = v 
