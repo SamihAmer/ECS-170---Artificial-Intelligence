@@ -94,10 +94,18 @@ class minimaxAI(connect4Player):
 		our_count = 0
 		our_spaces = 0
 		our_seq = [0,0,0,0]
+		our_weight1 = 20
+		our_weight2 = 50
+		our_weight3 = 100
+		our_weight_space = 5
 
 		opp_count = 0
 		opp_spaces = 0
 		opp_seq = [0,0,0,0]
+		opp_weight1 = 20
+		opp_weight2 = 50
+		opp_weight3 = 100
+		opp_weight_space = 5
 
 		score = 0
 
@@ -111,7 +119,7 @@ class minimaxAI(connect4Player):
 						return 100000000
 					opp_seq[opp_count] += 1
 					if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-						score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+						score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 					opp_seq = [0,0,0,0]
 					opp_count = 0
 					opp_spaces = 0
@@ -121,7 +129,7 @@ class minimaxAI(connect4Player):
 						return -100000000
 					our_seq[our_count] += 1
 					if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-						score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+						score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 					our_seq = [0,0,0,0]
 					our_count = 0
 					our_spaces = 0
@@ -136,13 +144,13 @@ class minimaxAI(connect4Player):
 			if opp_count != 0:
 				opp_seq[opp_count] += 1
 				if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-					score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+					score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 					opp_count = 0
 					opp_spaces = 0
 			elif our_count != 0:
 				our_seq[our_count] += 1
 				if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-					score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+					score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 					our_count = 0
 					our_spaces = 0
 			our_count = 0
@@ -209,7 +217,7 @@ class minimaxAI(connect4Player):
 						our_count += 1
 						opp_seq[opp_count] += 1
 						if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4: # if you can make sequence of 4 including spaces
-							score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+							score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 						opp_seq = [0,0,0,0] # reset the list because if you see 1 1 1 2 1 0 1, then 1 cannot make a sequence of 4. these 1's are useless.
 						opp_count = 0
 						opp_spaces = 0
@@ -221,7 +229,7 @@ class minimaxAI(connect4Player):
 						if opp_count > 3:
 							return -100000000
 						if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-							score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+							score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 						our_seq = [0,0,0,0]
 						our_count = 0
 						our_spaces = 0
@@ -236,13 +244,13 @@ class minimaxAI(connect4Player):
 				if opp_count != 0:
 					opp_seq[opp_count] += 1
 					if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-						score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+						score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 						opp_count = 0
 						opp_spaces = 0
 				elif our_count != 0:
 					our_seq[our_count] += 1
 					if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-						score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+						score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 						our_count = 0
 						our_spaces = 0
 				our_count = 0
@@ -334,10 +342,18 @@ class alphaBetaAI(connect4Player):
 		our_count = 0
 		our_spaces = 0
 		our_seq = [0,0,0,0]
+		our_weight1 = 20
+		our_weight2 = 50
+		our_weight3 = 100
+		our_weight_space = 5
 
 		opp_count = 0
 		opp_spaces = 0
 		opp_seq = [0,0,0,0]
+		opp_weight1 = 20
+		opp_weight2 = 50
+		opp_weight3 = 100
+		opp_weight_space = 5
 
 		score = 0
 
@@ -351,7 +367,7 @@ class alphaBetaAI(connect4Player):
 						return 100000000
 					opp_seq[opp_count] += 1
 					if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-						score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+						score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 					opp_seq = [0,0,0,0]
 					opp_count = 0
 					opp_spaces = 0
@@ -361,7 +377,7 @@ class alphaBetaAI(connect4Player):
 						return -100000000
 					our_seq[our_count] += 1
 					if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-						score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+						score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 					our_seq = [0,0,0,0]
 					our_count = 0
 					our_spaces = 0
@@ -376,13 +392,13 @@ class alphaBetaAI(connect4Player):
 			if opp_count != 0:
 				opp_seq[opp_count] += 1
 				if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-					score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+					score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 					opp_count = 0
 					opp_spaces = 0
 			elif our_count != 0:
 				our_seq[our_count] += 1
 				if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-					score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+					score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 					our_count = 0
 					our_spaces = 0
 			our_count = 0
@@ -449,7 +465,7 @@ class alphaBetaAI(connect4Player):
 						our_count += 1
 						opp_seq[opp_count] += 1
 						if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4: # if you can make sequence of 4 including spaces
-							score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+							score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 						opp_seq = [0,0,0,0] # reset the list because if you see 1 1 1 2 1 0 1, then 1 cannot make a sequence of 4. these 1's are useless.
 						opp_count = 0
 						opp_spaces = 0
@@ -461,7 +477,7 @@ class alphaBetaAI(connect4Player):
 						if opp_count > 3:
 							return -100000000
 						if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-							score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+							score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 						our_seq = [0,0,0,0]
 						our_count = 0
 						our_spaces = 0
@@ -476,13 +492,13 @@ class alphaBetaAI(connect4Player):
 				if opp_count != 0:
 					opp_seq[opp_count] += 1
 					if opp_seq[1] * 1 + opp_seq[2] * 2 + opp_seq[3] * 3 + opp_spaces >= 4:
-						score -= opp_seq[1] * 20 + opp_seq[2] * 50 + opp_seq[3] * 100 + opp_spaces * 5
+						score -= opp_seq[1] * opp_weight1 + opp_seq[2] * opp_weight2 + opp_seq[3] * opp_weight3 + opp_spaces * opp_weight_space
 						opp_count = 0
 						opp_spaces = 0
 				elif our_count != 0:
 					our_seq[our_count] += 1
 					if our_seq[1] * 1 + our_seq[2] * 2 + our_seq[3] * 3 + our_spaces >= 4:
-						score += our_seq[1] * 20 + our_seq[2] * 50 + our_seq[3] * 100 + our_spaces * 5
+						score += our_seq[1] * our_weight1 + our_seq[2] * our_weight2 + our_seq[3] * our_weight3 + our_spaces * our_weight_space
 						our_count = 0
 						our_spaces = 0
 				our_count = 0
