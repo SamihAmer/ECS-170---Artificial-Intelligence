@@ -181,25 +181,25 @@ class minimaxAI(connect4Player):
 						our_spaces = len(board) - j
 						if our_count == 1:
 							if our_spaces >= 3:
-								score += 20
+								score += our_weight1
 						if our_count == 2:
 							if our_spaces >= 2:
-								score += 50
+								score += our_weight2
 						if our_count == 3:
 							if our_spaces >= 1:
-								score += 100
+								score += our_weight3
 						break
 					if last_player == self.opponent.position:
 						opp_spaces = len(board) - j
 						if opp_count == 1:
 							if opp_spaces >= 3:
-								score -= 20
+								score -= opp_weight1
 						if opp_count == 2:
 							if opp_spaces >= 2:
-								score -= 50
+								score -= opp_weight2
 						if opp_count == 3:
 							if opp_spaces >= 1:
-								score -= 100
+								score -= opp_weight3
 						break
 						
 			our_count = 0
@@ -429,25 +429,25 @@ class alphaBetaAI(connect4Player):
 						our_spaces = len(board) - j
 						if our_count == 1:
 							if our_spaces >= 3:
-								score += 20
+								score += our_weight1
 						if our_count == 2:
 							if our_spaces >= 2:
-								score += 50
+								score += our_weight2
 						if our_count == 3:
 							if our_spaces >= 1:
-								score += 100
+								score += our_weight3
 						break
 					if last_player == self.opponent.position:
 						opp_spaces = len(board) - j
 						if opp_count == 1:
 							if opp_spaces >= 3:
-								score -= 20
+								score -= opp_weight1
 						if opp_count == 2:
 							if opp_spaces >= 2:
-								score -= 50
+								score -= opp_weight2
 						if opp_count == 3:
 							if opp_spaces >= 1:
-								score -= 100
+								score -= opp_weight3
 						break
 						
 			our_count = 0
